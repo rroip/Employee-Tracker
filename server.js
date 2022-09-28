@@ -1,5 +1,7 @@
 const inquirer = require("inquirer");
 const connection = require("./db/connection");
+const logo = require("asciiart-logo");
+const chalk = require("chalk");
 
 require("console.table");
 // if using promises use the two code lines below
@@ -7,6 +9,13 @@ require("console.table");
 // const utils = require("util");
 // db.query = utils.promisify(db.query);
 
+init();
+
+function init(){
+    const logoText = logo({ name: "Employee Tracker" }).render();
+    console.log(chalk.green(logoText));
+    trackerApp();
+}
 
 function trackerApp(){
     inquirer
@@ -22,7 +31,6 @@ function trackerApp(){
             "Add Role",
             "View All Departments",
             "Add Department",
-            "View Employees by Department",
             "Remove Employees",
             "End"
             // Add bonus array here //
@@ -54,7 +62,7 @@ function trackerApp(){
             case "View Employees By Department": viewEmployeeByDepartment();
             break;
 
-            case "Delete Employee": removeEmployees();
+            case "Remove Employees": removeEmployees();
             break;
 
             default: process.exit(0);
@@ -256,6 +264,18 @@ function updateEmployeeRole() {
       });
   }
 
+function viewAllRoles(){
+    connection.query("SELECT * FROM role", function(err, res){
+        if (err) console.log(err);
+        console.table(res);
+        console.log("Viewing All Roles")
+
+        trackerApp();
+    })
+    
+
+}
+
 //"Add Role" / CREATE: INSERT INTO
 function addRole() {
 
@@ -277,7 +297,7 @@ function addRole() {
       }));
   
       console.table(res);
-      console.log("Department array!");
+      console.log("Department list!");
   
       promptAddRole(departmentChoices);
     });
@@ -404,14 +424,14 @@ function viewEmployeeByDepartment() {
         FROM employee e`
   
     connection.query(query, function (err, res) {
-      if (err) throw err;
+      if (err) console.log(err);
   
       const deleteEmployeeChoices = res.map(({ id, first_name, last_name }) => ({
         value: id, name: `${id} ${first_name} ${last_name}`
       }));
   
       console.table(res);
-      console.log("ArrayToDelete!\n");
+      console.log("Emloyee to delete!\n");
   
       promptDelete(deleteEmployeeChoices);
     });
@@ -434,7 +454,7 @@ function viewEmployeeByDepartment() {
         var query = `DELETE FROM employee WHERE ?`;
         // when finished prompting, insert a new item into the db with that info
         connection.query(query, { id: answer.employeeId }, function (err, res) {
-          if (err) throw err;
+          if (err) console.log(err);
   
           console.table(res);
           console.log(res.affectedRows + "Deleted!\n");

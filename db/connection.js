@@ -1,5 +1,6 @@
 const mysql = require("mysql2");
 require("dotenv").config();
+const chalk = require("chalk");
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -14,7 +15,8 @@ const connection = mysql.createConnection({
 connection.connect(function (err){
     if (err) console.log(err);
     console.log("connected as id " + connection.threadId);
-    console.log(`WELCOME TO EMPLOYEE TRACKER`);
+    console.log(chalk.magenta(`WELCOME TO EMPLOYEE TRACKER`));
+    
     
 })
 
